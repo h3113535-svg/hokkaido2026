@@ -250,36 +250,99 @@ const firebaseConfig = {
         const db = getDatabase(app);
 
         // 📍 在這裡修改您的行程資料 (包含手動修改距離、加入圖片)
-        const scheduleData = [
-            {
-                date: "25", weekday: "Fri", location: "函館", lat: 41.7687, lng: 140.7290,
-                events: [
-                    { time: "13:00", title: "抵達新千歲轉國內線", category: "航班", transportType: "plane", travelTime: "1h", note: "轉機往函館" },
-                    { time: "16:30", title: "函館 Check-in", category: "住宿", transportType: "taxi", travelTime: "20m", note: "函館站前飯店" },
-                    // 👇 範例：如何加入圖片？在下面加上 image: '圖片網址'
-                    { time: "17:30", title: "函館朝市 / 金森倉庫", category: "景點", transportType: "walk", travelTime: "10m", note: "散步", image: 'https://images.unsplash.com/photo-1542044801-30d3e45ae49a?w=800&q=80' },
-                    { time: "19:00", title: "根室花丸壽司", category: "美食", transportType: "walk", travelTime: "5m", note: "晚餐" }
-                ]
-            },
-            {
-                date: "26", weekday: "Sat", location: "函館", lat: 41.7687, lng: 140.7290,
-                events: [
-                    { time: "09:00", title: "櫻丘通賞櫻", category: "景點", transportType: "taxi", travelTime: "15m", note: "市電可達" },
-                    { time: "10:30", title: "五稜郭公園", category: "景點", transportType: "walk", travelTime: "10m", note: "五稜郭塔" },
-                    // 👇 範例：小丑漢堡的圖片
-                    { time: "12:30", title: "小丑漢堡", category: "美食", transportType: "walk", travelTime: "5m", note: "必吃!", image: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&q=80' },
-                    { time: "15:30", title: "金森倉庫/星巴克", category: "購物", transportType: "bus", travelTime: "20m", note: "休息" },
-                    { time: "17:30", title: "函館山夜景", category: "景點", transportType: "bus", travelTime: "20m", note: "Magic Hour", image: 'https://images.unsplash.com/photo-1533050487297-09b450131914?w=800&q=80' }
-                ]
-            },
-            { date: "27", weekday: "Sun", location: "函館", lat: 41.7687, lng: 140.7290, events: [{ time: "09:00", title: "函館朝市", category: "美食", transportType: "walk", travelTime: "10m", note: "早餐" }, { time: "11:00", title: "元町教會群", category: "景點", transportType: "walk", travelTime: "15m", note: "異國風" }, { time: "15:00", title: "函館公園", category: "景點", transportType: "bus", travelTime: "20m", note: "賞櫻" }, { time: "16:30", title: "金森倉庫最後採買", category: "購物", transportType: "taxi", travelTime: "10m", note: "起司蛋糕" }, { time: "18:30", title: "阿佐利壽喜燒", category: "美食", transportType: "walk", travelTime: "5m", note: "需預約" }] },
-            { date: "28", weekday: "Mon", location: "二世谷", lat: 42.8048, lng: 140.6874, events: [{ time: "09:30", title: "函館取車 & 寄行李", category: "租車", transportType: "walk", travelTime: "10m", note: "自駕開始" }, { time: "10:30", title: "大沼國定公園", category: "景點", transportType: "car", travelTime: "40m", note: "風景優美" }, { time: "12:00", title: "森町・青葉丘", category: "景點", transportType: "car", travelTime: "20m", note: "賞櫻" }, { time: "14:30", title: "Silo 展望台", category: "景點", transportType: "car", travelTime: "90m", note: "洞爺湖景" }, { time: "15:30", title: "Lake Hill Farm", category: "美食", transportType: "car", travelTime: "10m", note: "吃冰" }, { time: "18:00", title: "入住二世谷別墅", category: "住宿", transportType: "car", travelTime: "40m", note: "晚餐:海鮮火鍋" }] },
-            { date: "29", weekday: "Tue", location: "洞爺湖", lat: 42.5646, lng: 140.8576, events: [{ time: "11:00", title: "出發洞爺湖", category: "交通", transportType: "car", travelTime: "0m", note: "睡到自然醒" }, { time: "12:30", title: "有珠山纜車", category: "景點", transportType: "car", travelTime: "60m", note: "火山地形" }, { time: "14:30", title: "洞爺湖遊覽船", category: "景點", transportType: "car", travelTime: "20m", note: "中島賞櫻" }, { time: "17:00", title: "超市補貨", category: "購物", transportType: "car", travelTime: "15m", note: "晚餐食材" }, { time: "19:00", title: "別墅晚餐", category: "美食", transportType: "walk", travelTime: "0m", note: "湯咖哩" }] },
-            { date: "30", weekday: "Wed", location: "登別", lat: 42.4124, lng: 141.1065, events: [{ time: "10:00", title: "出發登別", category: "交通", transportType: "car", travelTime: "0m", note: "移動日" }, { time: "11:30", title: "登別櫻花隧道", category: "景點", transportType: "car", travelTime: "90m", note: "賞櫻" }, { time: "13:30", title: "登別地獄谷", category: "景點", transportType: "car", travelTime: "10m", note: "地熱" }, { time: "16:00", title: "高橋牧場", category: "美食", transportType: "car", travelTime: "80m", note: "回程順路" }, { time: "17:00", title: "京極名水公園", category: "景點", transportType: "car", travelTime: "20m", note: "裝水" }, { time: "19:00", title: "別墅晚餐", category: "美食", transportType: "walk", travelTime: "0m", note: "和牛燒肉" }] },
-            { date: "01", weekday: "Thu", location: "小樽", lat: 43.1907, lng: 140.9947, events: [{ time: "10:00", title: "二世谷還車", category: "租車", transportType: "car", travelTime: "0m", note: "換包車" }, { time: "11:30", title: "余市酒廠+堤防", category: "景點", transportType: "car", travelTime: "60m", note: "威士忌" }, { time: "13:00", title: "小樽運河 & 午餐", category: "景點", transportType: "car", travelTime: "30m", note: "政壽司" }, { time: "15:00", title: "堺町通 / 手宮公園", category: "購物", transportType: "walk", travelTime: "10m", note: "甜點賞櫻" }, { time: "17:30", title: "札幌 Check-in", category: "住宿", transportType: "car", travelTime: "50m", note: "行李合體" }] },
-            { date: "02", weekday: "Fri", location: "札幌", lat: 43.0618, lng: 141.3545, events: [{ time: "10:00", title: "北海道神宮", category: "景點", transportType: "subway", travelTime: "20m", note: "參拜" }, { time: "11:30", title: "圓山公園", category: "景點", transportType: "walk", travelTime: "5m", note: "野餐" }, { time: "12:30", title: "圓山咖啡廳", category: "美食", transportType: "walk", travelTime: "10m", note: "午餐" }, { time: "14:30", title: "北海道大學", category: "景點", transportType: "subway", travelTime: "20m", note: "散步" }, { time: "16:30", title: "狸小路逛街", category: "購物", transportType: "subway", travelTime: "15m", note: "採買" }, { time: "18:30", title: "成吉思汗烤肉", category: "美食", transportType: "walk", travelTime: "10m", note: "大口吃肉" }] },
-            { date: "03", weekday: "Sat", location: "千歲", lat: 42.7937, lng: 141.6795, events: [{ time: "10:30", title: "飯店接送", category: "交通", transportType: "taxi", travelTime: "0m", note: "專車" }, { time: "11:30", title: "新千歲機場", category: "購物", transportType: "car", travelTime: "50m", note: "最後採買" }, { time: "13:00", title: "搭機返台", category: "航班", transportType: "plane", travelTime: "0m", note: "回家" }] }
-        ];
+// 📍 請複製這整段，取代程式碼中的 const scheduleData = [...]
+const scheduleData = [
+    {
+        date: "25", weekday: "Fri", location: "函館", lat: 41.7687, lng: 140.7290,
+        events: [
+            { time: "13:00", title: "抵達新千歲轉國內線", category: "航班", transportType: "plane", travelTime: "1h", note: "轉機往函館", image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80" }, // 飛機
+            { time: "16:30", title: "函館 Check-in", category: "住宿", transportType: "taxi", travelTime: "20m", note: "函館站前飯店", image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" }, // 飯店示意圖
+            { time: "17:30", title: "函館朝市 / 金森倉庫", category: "景點", transportType: "walk", travelTime: "10m", note: "紅磚倉庫散步", image: "https://images.unsplash.com/photo-1542044801-30d3e45ae49a?w=800&q=80" }, // 金森倉庫
+            { time: "19:00", title: "根室花丸壽司", category: "美食", transportType: "walk", travelTime: "5m", note: "迴轉壽司晚餐", image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&q=80" } // 壽司
+        ]
+    },
+    {
+        date: "26", weekday: "Sat", location: "函館", lat: 41.7687, lng: 140.7290,
+        events: [
+            { time: "09:00", title: "櫻丘通賞櫻", category: "景點", transportType: "taxi", travelTime: "15m", note: "櫻花隧道", image: "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&q=80" }, // 櫻花
+            { time: "10:30", title: "五稜郭公園", category: "景點", transportType: "walk", travelTime: "10m", note: "登上五稜郭塔", image: "https://images.unsplash.com/photo-1594970921430-47b19df49b82?w=800&q=80" }, // 五稜郭塔
+            { time: "12:30", title: "小丑漢堡", category: "美食", transportType: "walk", travelTime: "5m", note: "必吃! 幸運小丑", image: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&q=80" }, // 漢堡
+            { time: "15:30", title: "金森倉庫/星巴克", category: "購物", transportType: "bus", travelTime: "20m", note: "休息、喝咖啡", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80" }, // 咖啡
+            { time: "17:30", title: "函館山夜景", category: "景點", transportType: "bus", travelTime: "20m", note: "百萬夜景 Magic Hour", image: "https://images.unsplash.com/photo-1533050487297-09b450131914?w=800&q=80" } // 函館夜景
+        ]
+    },
+    {
+        date: "27", weekday: "Sun", location: "函館", lat: 41.7687, lng: 140.7290,
+        events: [
+            { time: "09:00", title: "函館朝市", category: "美食", transportType: "walk", travelTime: "10m", note: "早餐/釣烏賊", image: "https://images.unsplash.com/photo-1534483509719-3feaee7c30da?w=800&q=80" }, // 海鮮市場
+            { time: "11:00", title: "元町教會群", category: "景點", transportType: "walk", travelTime: "15m", note: "異國風情街道", image: "https://plus.unsplash.com/premium_photo-1661962495669-d72424626bd2?w=800&q=80" }, // 教堂/街道
+            { time: "15:00", title: "函館公園", category: "景點", transportType: "bus", travelTime: "20m", note: "賞櫻與迷你遊樂園", image: "https://images.unsplash.com/photo-1572455044327-7348c1be7267?w=800&q=80" }, // 公園
+            { time: "16:30", title: "金森倉庫最後採買", category: "購物", transportType: "taxi", travelTime: "10m", note: "Snaffle's 起司蛋糕", image: "https://images.unsplash.com/photo-1557925923-4706d5eb3d19?w=800&q=80" }, // 甜點
+            { time: "18:30", title: "阿佐利壽喜燒", category: "美食", transportType: "walk", travelTime: "5m", note: "和牛壽喜燒 (需預約)", image: "https://images.unsplash.com/photo-1588636402444-118e98b04618?w=800&q=80" } // 壽喜燒
+        ]
+    },
+    {
+        date: "28", weekday: "Mon", location: "二世谷", lat: 42.8048, lng: 140.6874,
+        events: [
+            { time: "09:30", title: "函館取車 & 寄行李", category: "租車", transportType: "walk", travelTime: "10m", note: "自駕開始！", image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80" }, // 租車自駕
+            { time: "10:30", title: "大沼國定公園", category: "景點", transportType: "car", travelTime: "40m", note: "駒之岳絕景", image: "https://images.unsplash.com/photo-1624623253738-9e5c4908970d?w=800&q=80" }, // 湖景(示意)
+            { time: "12:00", title: "森町・青葉丘", category: "景點", transportType: "car", travelTime: "20m", note: "賞櫻秘境", image: "https://images.unsplash.com/photo-1493589976221-c2157d91244d?w=800&q=80" }, // 樹林櫻花
+            { time: "14:30", title: "Silo 展望台", category: "景點", transportType: "car", travelTime: "90m", note: "眺望洞爺湖", image: "https://images.unsplash.com/photo-1517769971842-88f4b0051e23?w=800&q=80" }, // 洞爺湖景
+            { time: "15:30", title: "Lake Hill Farm", category: "美食", transportType: "car", travelTime: "10m", note: "牧場冰淇淋", image: "https://images.unsplash.com/photo-1563228965-03d3c4033288?w=800&q=80" }, // 牧場/冰淇淋
+            { time: "18:00", title: "入住二世谷別墅", category: "住宿", transportType: "car", travelTime: "40m", note: "晚餐：海鮮火鍋", image: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800&q=80" } // 別墅/木屋
+        ]
+    },
+    {
+        date: "29", weekday: "Tue", location: "洞爺湖", lat: 42.5646, lng: 140.8576,
+        events: [
+            { time: "11:00", title: "出發洞爺湖", category: "交通", transportType: "car", travelTime: "0m", note: "睡到自然醒", image: "https://images.unsplash.com/photo-1558223694-8451b279d63f?w=800&q=80" }, // 開車風景
+            { time: "12:30", title: "有珠山纜車", category: "景點", transportType: "car", travelTime: "60m", note: "看火山地形", image: "https://images.unsplash.com/photo-1545653494-b772c672b152?w=800&q=80" }, // 纜車
+            { time: "14:30", title: "洞爺湖遊覽船", category: "景點", transportType: "car", travelTime: "20m", note: "中島賞櫻", image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80" }, // 湖與船
+            { time: "17:00", title: "超市補貨", category: "購物", transportType: "car", travelTime: "15m", note: "買晚餐食材", image: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=800&q=80" }, // 超市
+            { time: "19:00", title: "別墅晚餐", category: "美食", transportType: "walk", travelTime: "0m", note: "自製湯咖哩", image: "https://images.unsplash.com/photo-1555126634-323283e090fa?w=800&q=80" } // 咖哩
+        ]
+    },
+    {
+        date: "30", weekday: "Wed", location: "登別", lat: 42.4124, lng: 141.1065,
+        events: [
+            { time: "10:00", title: "出發登別", category: "交通", transportType: "car", travelTime: "0m", note: "移動日", image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80" }, // 公路旅行
+            { time: "11:30", title: "登別櫻花隧道", category: "景點", transportType: "car", travelTime: "90m", note: "賞櫻勝地", image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&q=80" }, // 櫻花路
+            { time: "13:30", title: "登別地獄谷", category: "景點", transportType: "car", travelTime: "10m", note: "地熱景觀", image: "https://images.unsplash.com/photo-1600613277026-64539c279c09?w=800&q=80" }, // 地獄谷/硫磺
+            { time: "16:00", title: "高橋牧場", category: "美食", transportType: "car", travelTime: "80m", note: "年輪蛋糕/泡芙", image: "https://images.unsplash.com/photo-1529566118393-6cd79805d76d?w=800&q=80" }, // 牧場甜點
+            { time: "17:00", title: "京極名水公園", category: "景點", transportType: "car", travelTime: "20m", note: "裝名水回別墅", image: "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800&q=80" }, // 瀑布/水
+            { time: "19:00", title: "別墅晚餐", category: "美食", transportType: "walk", travelTime: "0m", note: "和牛燒肉趴", image: "https://images.unsplash.com/photo-1558030006-450675393462?w=800&q=80" } // 燒肉
+        ]
+    },
+    {
+        date: "01", weekday: "Thu", location: "小樽", lat: 43.1907, lng: 140.9947,
+        events: [
+            { time: "10:00", title: "二世谷還車", category: "租車", transportType: "car", travelTime: "0m", note: "換 Alphard 包車", image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80" }, // 包車/車子
+            { time: "11:30", title: "余市酒廠+堤防", category: "景點", transportType: "car", travelTime: "60m", note: "威士忌酒廠", image: "https://images.unsplash.com/photo-1596706912386-8a7c20c9f692?w=800&q=80" }, // 酒桶
+            { time: "13:00", title: "小樽運河 & 午餐", category: "景點", transportType: "car", travelTime: "30m", note: "若雞時代/政壽司", image: "https://images.unsplash.com/photo-1589453966567-27b4f5319803?w=800&q=80" }, // 小樽運河
+            { time: "15:00", title: "堺町通 / 手宮公園", category: "購物", transportType: "walk", travelTime: "10m", note: "甜點街賞櫻", image: "https://images.unsplash.com/photo-1527265103685-610190369888?w=800&q=80" }, // 甜點/街道
+            { time: "17:30", title: "札幌 Check-in", category: "住宿", transportType: "car", travelTime: "50m", note: "行李合體", image: "https://images.unsplash.com/photo-1620286866164-323620958d56?w=800&q=80" } // 札幌/飯店
+        ]
+    },
+    {
+        date: "02", weekday: "Fri", location: "札幌", lat: 43.0618, lng: 141.3545,
+        events: [
+            { time: "10:00", title: "北海道神宮", category: "景點", transportType: "subway", travelTime: "20m", note: "參拜", image: "https://images.unsplash.com/photo-1590499690106-993d98fb870c?w=800&q=80" }, // 神社
+            { time: "11:30", title: "圓山公園", category: "景點", transportType: "walk", travelTime: "5m", note: "野餐/賞櫻", image: "https://images.unsplash.com/photo-1616556111075-8126b8061e88?w=800&q=80" }, // 公園野餐
+            { time: "12:30", title: "圓山咖啡廳", category: "美食", transportType: "walk", travelTime: "10m", note: "文青午餐", image: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80" }, // 咖啡廳
+            { time: "14:30", title: "北海道大學", category: "景點", transportType: "subway", travelTime: "20m", note: "校園散步", image: "https://images.unsplash.com/photo-1634788102377-160171221430?w=800&q=80" }, // 樹林校園
+            { time: "16:30", title: "狸小路逛街", category: "購物", transportType: "subway", travelTime: "15m", note: "藥妝/伴手禮", image: "https://images.unsplash.com/photo-1579758629938-03607ccdbaba?w=800&q=80" }, // 商店街
+            { time: "18:30", title: "成吉思汗烤肉", category: "美食", transportType: "walk", travelTime: "10m", note: "大口吃羊肉", image: "https://images.unsplash.com/photo-1594040226829-7f251ab46d80?w=800&q=80" } // 烤肉
+        ]
+    },
+    {
+        date: "03", weekday: "Sat", location: "千歲", lat: 42.7937, lng: 141.6795,
+        events: [
+            { time: "10:30", title: "飯店接送", category: "交通", transportType: "taxi", travelTime: "0m", note: "專車直達機場", image: "https://images.unsplash.com/photo-1632304918731-016335129995?w=800&q=80" }, // 計程車
+            { time: "11:30", title: "新千歲機場", category: "購物", transportType: "car", travelTime: "50m", note: "最後採買", image: "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?w=800&q=80" }, // 機場/購物
+            { time: "13:00", title: "搭機返台", category: "航班", transportType: "plane", travelTime: "0m", note: "甜蜜的家", image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80" } // 飛機
+        ]
+    }
+];
 
         createApp({
             data() {
@@ -376,4 +439,5 @@ const firebaseConfig = {
         }).mount('#app');
     </script>
 </body>
+
 </html>
