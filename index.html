@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小森林北海道之旅 (圖片版)</title>
+    <title>小森林北海道 2026 (雲端分層版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,8 +26,8 @@
         
         <transition name="fade">
             <div v-if="isLocked" class="absolute inset-0 z-[100] bg-blue-600 flex flex-col items-center justify-center text-white p-10">
-                <i class="fa-solid fa-camera-retro text-6xl mb-4 opacity-80 animate-bounce"></i>
-                <h2 class="text-2xl font-bold mb-2">Hokkaido 2025</h2>
+                <i class="fa-solid fa-users text-6xl mb-4 opacity-80 animate-bounce"></i>
+                <h2 class="text-2xl font-bold mb-2">Hokkaido 2026</h2>
                 <p class="text-sm opacity-80 mb-8">Family Trip ・ 請輸入密碼</p>
                 <div class="flex space-x-4 mb-8">
                     <div v-for="(digit, idx) in inputPassword" :key="idx" class="w-4 h-4 rounded-full" :class="digit ? 'bg-white' : 'bg-blue-400'"></div>
@@ -41,31 +41,24 @@
                         <button @click="backspace()" class="w-16 h-16 flex items-center justify-center text-xl active:opacity-50"><i class="fa-solid fa-delete-left"></i></button>
                     </div>
                 </div>
-                <p v-if="loginError" class="mt-4 text-yellow-300 font-bold animate-pulse">密碼錯誤</p>
             </div>
         </transition>
 
         <header class="relative z-10">
             <div class="h-[250px] w-full bg-blue-200 header-curve overflow-hidden relative shadow-lg">
-                <img :src="headerImage" 
-                     class="w-full h-full object-cover object-center opacity-90 transition-transform duration-1000 hover:scale-105"
-                     alt="Hokkaido Banner">
-                
+                <img :src="headerImage" class="w-full h-full object-cover object-center opacity-90">
                 <div class="absolute bottom-12 left-6 text-white text-shadow">
                     <h1 class="text-2xl font-bold tracking-widest drop-shadow-md">HOKKAIDO</h1>
-                    <p class="text-sm font-light tracking-wider drop-shadow-md">Family Trip 2025</p>
+                    <p class="text-sm font-light tracking-wider drop-shadow-md">Family Trip 2026</p>
                 </div>
                 <div class="absolute top-4 right-4 bg-black/30 backdrop-blur-md text-white text-[10px] px-3 py-1 rounded-full flex items-center">
                     <div class="w-2 h-2 rounded-full mr-2" :class="dbConnected ? 'bg-green-400' : 'bg-red-400 animate-pulse'"></div>
-                    {{ dbConnected ? '已連線同步中' : '連線中...' }}
+                    {{ dbConnected ? '已連線' : '連線中' }}
                 </div>
             </div>
             
             <div class="absolute -bottom-6 right-4 flex space-x-3 z-20">
-                <button v-for="tab in ['schedule', 'info', 'shopping', 'expense']" 
-                        @click="currentTab = tab" 
-                        :class="tabClass(tab)" 
-                        class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all transform hover:-translate-y-1">
+                <button v-for="tab in ['schedule', 'info', 'shopping', 'expense']" @click="switchTab(tab)" :class="tabClass(tab)" class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all transform hover:-translate-y-1">
                     <i :class="getTabIcon(tab)" class="text-lg"></i>
                 </button>
             </div>
@@ -86,11 +79,9 @@
 
                 <div class="bg-gradient-to-r from-blue-400 to-cyan-300 text-white rounded-2xl p-4 mb-6 shadow-md flex justify-between items-center relative overflow-hidden min-h-[100px]">
                     <div class="relative z-10">
-                        <div class="text-xs opacity-90"><i class="fa-solid fa-location-dot mr-1"></i>{{ currentSchedule.location }} (即時)</div>
-                        <div v-if="weatherLoading" class="mt-2 text-sm opacity-80"><i class="fa-solid fa-spinner fa-spin mr-2"></i>連線中...</div>
-                        <div v-else>
-                            <div class="text-3xl font-bold mt-1">{{ currentWeather.temp }}°C <span class="text-sm font-normal">{{ currentWeather.desc }}</span></div>
-                        </div>
+                        <div class="text-xs opacity-90"><i class="fa-solid fa-location-dot mr-1"></i>{{ currentSchedule.location }}</div>
+                        <div v-if="weatherLoading" class="mt-2 text-sm opacity-80">天氣載入中...</div>
+                        <div v-else><div class="text-3xl font-bold mt-1">{{ currentWeather.temp }}°C <span class="text-sm font-normal">{{ currentWeather.desc }}</span></div></div>
                     </div>
                     <i :class="currentWeather.icon" class="text-5xl opacity-80 relative z-10"></i>
                 </div>
@@ -98,29 +89,18 @@
                 <div class="space-y-0">
                     <div v-for="(item, idx) in currentSchedule.events" :key="idx" class="relative pl-6 pb-8 border-l-2 border-dashed border-blue-200 last:border-0">
                         <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 ring-4 ring-blue-100"></div>
-                        
-                        <div v-if="idx > 0" class="flex items-center text-xs text-slate-400 mb-2 ml-1">
-                            <i :class="getTransportIcon(item.transportType)" class="mr-2"></i><span>{{ item.travelTime }}</span>
-                        </div>
-                        <div v-else-if="idx === 0" class="flex items-center text-xs text-slate-400 mb-2 ml-1">
-                             <i class="fa-solid fa-bed mr-2"></i><span>從住宿出發</span>
-                        </div>
-
+                        <div v-if="idx > 0" class="flex items-center text-xs text-slate-400 mb-2 ml-1"><i :class="getTransportIcon(item.transportType)" class="mr-2"></i><span>{{ item.travelTime }}</span></div>
+                        <div v-else-if="idx === 0" class="flex items-center text-xs text-slate-400 mb-2 ml-1"><i class="fa-solid fa-bed mr-2"></i><span>從住宿出發</span></div>
                         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
                             <span :class="getCategoryColor(item.category)" class="absolute top-0 right-0 px-3 py-1 text-[10px] rounded-bl-xl font-bold text-white">{{ item.category }}</span>
-                            
                             <div class="flex items-start">
                                 <div class="mr-3 mt-1 text-blue-500 text-xl"><i :class="getCategoryIcon(item.category)"></i></div>
                                 <div class="flex-1">
                                     <h3 class="font-bold text-slate-700 text-lg leading-tight mb-1">{{ item.title }}</h3>
                                     <p class="text-xs text-slate-500 font-mono mb-2"><i class="fa-regular fa-clock mr-1"></i>{{ item.time }}</p>
-                                    
-                                    <div v-if="item.image" class="mb-3 mt-2 rounded-lg overflow-hidden h-32 w-full relative">
-                                        <img :src="item.image" class="w-full h-full object-cover hover:scale-110 transition duration-500">
-                                    </div>
-
+                                    <div v-if="item.image" class="mb-3 mt-2 rounded-lg overflow-hidden h-32 w-full relative"><img :src="item.image" class="w-full h-full object-cover"></div>
                                     <p v-if="item.note" class="text-sm text-slate-600 bg-slate-50 p-2 rounded-lg mb-2">{{ item.note }}</p>
-                                    <a :href="'https://www.google.com/maps/search/?api=1&query=' + item.title" target="_blank" class="inline-flex items-center text-xs font-bold text-blue-500 mt-1 hover:text-blue-700"><i class="fa-solid fa-location-arrow mr-1"></i> 導航去這裡</a>
+                                    <a :href="'https://www.google.com/maps/search/?api=1&query=' + item.title" target="_blank" class="inline-flex items-center text-xs font-bold text-blue-500 mt-1 hover:text-blue-700"><i class="fa-solid fa-location-arrow mr-1"></i> 導航</a>
                                 </div>
                             </div>
                         </div>
@@ -130,34 +110,18 @@
 
             <div v-if="currentTab === 'info'" class="space-y-4">
                 <h2 class="text-xl font-bold text-slate-800">旅行資訊</h2>
-                
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                    <h3 class="font-bold text-blue-600 mb-4 flex justify-between">
-                        <span><i class="fa-solid fa-coins mr-2"></i>匯率計算機</span>
-                    </h3>
-                    
+                    <h3 class="font-bold text-blue-600 mb-4 flex justify-between"><span><i class="fa-solid fa-coins mr-2"></i>匯率計算機</span></h3>
                     <div class="bg-blue-50 p-3 rounded-lg mb-4 flex items-center justify-between">
-                        <span class="text-xs text-blue-500 font-bold">目前匯率設定</span>
-                        <div class="flex items-center bg-white rounded px-2 py-1">
-                            <span class="text-xs text-slate-400 mr-2">1 JPY =</span>
-                            <input v-model="exchangeRate" type="number" step="0.001" class="w-16 text-right font-bold text-blue-600 outline-none border-b border-blue-200 focus:border-blue-500 text-sm">
-                            <span class="text-xs text-slate-400 ml-1">TWD</span>
-                        </div>
+                        <span class="text-xs text-blue-500 font-bold">匯率設定</span>
+                        <div class="flex items-center bg-white rounded px-2 py-1"><span class="text-xs text-slate-400 mr-2">1 JPY =</span><input v-model="exchangeRate" type="number" step="0.001" class="w-16 text-right font-bold text-blue-600 outline-none text-sm"><span class="text-xs text-slate-400 ml-1">TWD</span></div>
                     </div>
-
                     <div class="flex items-center space-x-2">
-                        <div class="flex-1">
-                            <label class="text-[10px] text-slate-400 block mb-1">日幣 (JPY)</label>
-                            <input v-model="yenAmount" type="number" class="w-full bg-slate-100 rounded-lg p-2 outline-none font-mono">
-                        </div>
+                        <div class="flex-1"><label class="text-[10px] text-slate-400 block mb-1">日幣</label><input v-model="yenAmount" type="number" class="w-full bg-slate-100 rounded-lg p-2 outline-none font-mono"></div>
                         <i class="fa-solid fa-arrow-right text-slate-300 mt-4"></i>
-                        <div class="flex-1">
-                            <label class="text-[10px] text-slate-400 block mb-1">台幣 (TWD)</label>
-                            <div class="w-full bg-slate-200 rounded-lg p-2 font-mono font-bold text-slate-700">{{ calculatedTwd }}</div>
-                        </div>
+                        <div class="flex-1"><label class="text-[10px] text-slate-400 block mb-1">台幣</label><div class="w-full bg-slate-200 rounded-lg p-2 font-mono font-bold text-slate-700">{{ calculatedTwd }}</div></div>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-3">
                     <div v-for="info in infoCards" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center h-32 hover:border-blue-300 transition cursor-pointer">
                         <div :class="info.bgClass" class="w-10 h-10 rounded-full flex items-center justify-center mb-2"><i :class="info.icon" class="text-xl"></i></div>
@@ -167,62 +131,116 @@
             </div>
 
             <div v-if="currentTab === 'shopping'">
-                <h2 class="text-xl font-bold text-slate-800 mb-4">購物願望清單 <span class="text-xs font-normal text-slate-400 ml-2">(同步中)</span></h2>
-                <div v-if="loading" class="flex justify-center py-10"><div class="loader"></div></div>
-                <div v-else-if="shoppingList.length === 0" class="text-center py-10 text-slate-400"><i class="fa-solid fa-basket-shopping text-4xl mb-3 opacity-30"></i><p>清單是空的</p></div>
-                <div v-for="(item) in shoppingList" :key="item.id" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-3 flex items-center relative group">
-                    <button @click="deleteItem('shopping', item.id)" class="absolute top-2 right-2 text-slate-300 hover:text-red-400"><i class="fa-solid fa-times"></i></button>
-                    <div class="w-12 h-12 bg-slate-100 rounded-lg mr-4 flex items-center justify-center text-slate-300"><i class="fa-solid fa-gift"></i></div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-slate-700" :class="{'line-through text-slate-300': item.checked}">{{ item.name }}</h4>
-                        <p class="text-xs text-slate-400">¥{{ item.price }} <span class="text-[10px] bg-gray-100 px-1 rounded ml-1">約 ${{ Math.round(item.price * exchangeRate) }}</span></p>
+                <div v-if="!activeMember">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4">全家購物車 <span class="text-xs font-normal text-slate-400 ml-2">(點擊頭像進入)</span></h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div v-for="member in familyMembers" :key="member.name" @click="activeMember = member.name" 
+                             class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center cursor-pointer hover:shadow-md hover:border-blue-300 transition relative overflow-hidden">
+                            <div class="w-16 h-16 rounded-full mb-3 flex items-center justify-center text-2xl" :class="member.bg">
+                                <i :class="member.icon"></i>
+                            </div>
+                            <h3 class="font-bold text-slate-700">{{ member.name }}</h3>
+                            <p class="text-xs text-slate-400 mt-1">{{ getMemberItemCount(member.name, 'shopping') }} 項商品</p>
+                            <div v-if="getMemberItemCount(member.name, 'shopping') > 0" class="absolute top-4 right-4 w-3 h-3 bg-red-400 rounded-full"></div>
+                        </div>
                     </div>
-                    <input type="checkbox" :checked="item.checked" @change="toggleCheck(item.id, item.checked)" class="w-6 h-6 text-blue-500 rounded focus:ring-blue-500">
                 </div>
-                <button @click="showAddModal = 'shopping'" class="fixed bottom-6 right-6 w-14 h-14 bg-slate-800 text-white rounded-full shadow-2xl flex items-center justify-center text-2xl z-50 hover:scale-110 transition"><i class="fa-solid fa-plus"></i></button>
+
+                <div v-else>
+                    <div class="flex items-center mb-4">
+                        <button @click="activeMember = null" class="mr-3 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800">{{ activeMember }}的願望</h2>
+                            <p class="text-xs text-slate-400">總預算: ¥{{ getMemberTotal(activeMember, 'shopping').toLocaleString() }}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="loading" class="flex justify-center py-10"><div class="loader"></div></div>
+                    <div v-else-if="filteredShoppingList.length === 0" class="text-center py-10 text-slate-400"><i class="fa-solid fa-basket-shopping text-4xl mb-3 opacity-30"></i><p>這裡空空的</p></div>
+
+                    <div v-for="(item) in filteredShoppingList" :key="item.id" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-3 flex items-center relative group">
+                        <button @click="deleteItem('shopping', item.id)" class="absolute top-2 right-2 text-slate-300 hover:text-red-400"><i class="fa-solid fa-times"></i></button>
+                        <div class="w-12 h-12 bg-slate-100 rounded-lg mr-4 flex items-center justify-center text-slate-300"><i class="fa-solid fa-gift"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-700" :class="{'line-through text-slate-300': item.checked}">{{ item.name }}</h4>
+                            <p class="text-xs text-slate-400">¥{{ item.price }} 
+                                <span v-if="item.recipient" class="ml-2 bg-pink-100 text-pink-500 px-2 py-0.5 rounded-full text-[10px]"><i class="fa-solid fa-heart mr-1"></i>給: {{ item.recipient }}</span>
+                            </p>
+                        </div>
+                        <input type="checkbox" :checked="item.checked" @change="toggleCheck(item.id, item.checked)" class="w-6 h-6 text-blue-500 rounded focus:ring-blue-500">
+                    </div>
+                    <button @click="showAddModal = 'shopping'" class="fixed bottom-6 right-6 w-14 h-14 bg-slate-800 text-white rounded-full shadow-2xl flex items-center justify-center text-2xl z-50 hover:scale-110 transition"><i class="fa-solid fa-plus"></i></button>
+                </div>
             </div>
 
             <div v-if="currentTab === 'expense'">
-                <h2 class="text-xl font-bold text-slate-800 mb-4">共同旅費記帳 <span class="text-xs font-normal text-slate-400 ml-2">(同步中)</span></h2>
-                <div class="bg-slate-800 text-white rounded-2xl p-6 mb-6 shadow-lg text-center">
-                    <p class="text-sm opacity-70 mb-1">總花費 (TWD) <span class="text-[10px] opacity-50 block">匯率: {{ exchangeRate }}</span></p>
-                    <h3 class="text-4xl font-bold font-mono">{{ totalExpenseTWD.toLocaleString() }}</h3>
+                <div v-if="!activeMember">
+                    <div class="bg-slate-800 text-white rounded-2xl p-6 mb-6 shadow-lg text-center">
+                        <p class="text-sm opacity-70 mb-1">全家總花費 (TWD)</p>
+                        <h3 class="text-4xl font-bold font-mono">{{ totalExpenseTWD.toLocaleString() }}</h3>
+                    </div>
+
+                    <h2 class="text-lg font-bold text-slate-800 mb-3">誰付的錢？</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div v-for="member in familyMembers" :key="member.name" @click="activeMember = member.name" 
+                             class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center cursor-pointer hover:shadow-md transition">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg mr-3" :class="member.bg"><i :class="member.icon"></i></div>
+                            <div>
+                                <h3 class="font-bold text-sm text-slate-700">{{ member.name }}</h3>
+                                <p class="text-xs font-mono text-slate-400">¥{{ getMemberTotal(member.name, 'expense').toLocaleString() }}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div v-if="loading" class="flex justify-center py-5"><div class="loader"></div></div>
-                <div class="space-y-3 pb-20">
-                    <div v-for="(exp) in expenseList" :key="exp.id" class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-50 relative">
+
+                <div v-else>
+                    <div class="flex items-center mb-4">
+                        <button @click="activeMember = null" class="mr-3 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800">{{ activeMember }}付的錢</h2>
+                            <p class="text-xs text-slate-400">小計: ¥{{ getMemberTotal(activeMember, 'expense').toLocaleString() }}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="loading" class="flex justify-center py-5"><div class="loader"></div></div>
+                    <div v-else-if="filteredExpenseList.length === 0" class="text-center py-10 text-slate-400"><p>沒有紀錄</p></div>
+
+                    <div v-for="(exp) in filteredExpenseList" :key="exp.id" class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-50 relative mb-3">
                         <button @click="deleteItem('expense', exp.id)" class="absolute top-2 right-2 text-[10px] text-slate-200 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
                         <div class="flex items-center">
                             <div class="w-10 h-10 rounded-full bg-yellow-50 text-yellow-500 flex items-center justify-center mr-3"><i class="fa-solid fa-yen-sign"></i></div>
                             <div>
-                                <p class="font-bold text-sm">{{ exp.name }} <span v-if="exp.creator" class="text-[10px] text-slate-400 font-normal">({{ exp.creator }})</span></p>
+                                <p class="font-bold text-sm">{{ exp.name }}</p>
                                 <p class="text-xs text-slate-400">{{ exp.date }}</p>
                             </div>
                         </div>
                         <span class="font-mono font-bold text-slate-700">¥ {{ Number(exp.amount).toLocaleString() }}</span>
                     </div>
+                    <button @click="showAddModal = 'expense'" class="fixed bottom-6 right-6 w-14 h-14 bg-slate-800 text-white rounded-full shadow-2xl flex items-center justify-center text-2xl z-50 hover:scale-110 transition"><i class="fa-solid fa-plus"></i></button>
                 </div>
-                <button @click="showAddModal = 'expense'" class="fixed bottom-6 right-6 w-14 h-14 bg-slate-800 text-white rounded-full shadow-2xl flex items-center justify-center text-2xl z-50 hover:scale-110 transition"><i class="fa-solid fa-plus"></i></button>
             </div>
 
         </main>
 
         <div v-if="showAddModal" class="fixed inset-0 bg-black/50 z-[60] flex items-end sm:items-center justify-center p-4">
             <div class="bg-white w-full max-w-sm rounded-2xl p-6 shadow-2xl animate-bounce-in">
-                <h3 class="text-lg font-bold mb-4">{{ showAddModal === 'shopping' ? '新增願望' : '新增花費' }}</h3>
+                <h3 class="text-lg font-bold mb-4">
+                    {{ showAddModal === 'shopping' ? activeMember + '想買什麼?' : activeMember + '付了什麼錢?' }}
+                </h3>
                 <div class="space-y-3">
                     <div><label class="block text-xs text-slate-400 mb-1">名稱</label><input v-model="newItem.name" type="text" class="w-full bg-slate-100 rounded-lg p-3 outline-none"></div>
                     <div><label class="block text-xs text-slate-400 mb-1">金額 (¥)</label><input v-model="newItem.amount" type="number" class="w-full bg-slate-100 rounded-lg p-3 outline-none"></div>
-                    <div><label class="block text-xs text-slate-400 mb-1">是誰新增的？</label>
-                        <select v-model="newItem.creator" class="w-full bg-slate-100 rounded-lg p-3 outline-none">
-                            <option value="爸爸">爸爸</option><option value="媽媽">媽媽</option><option value="哥哥">哥哥</option><option value="弟弟">弟弟</option>
-                        </select>
+                    
+                    <div v-if="showAddModal === 'shopping'">
+                        <label class="block text-xs text-slate-400 mb-1">這要送給誰？(選填)</label>
+                        <input v-model="newItem.recipient" type="text" class="w-full bg-pink-50 rounded-lg p-3 outline-none text-pink-600" placeholder="例如: 同事、阿姨...">
                     </div>
+
                     <div v-if="showAddModal === 'expense'"><label class="block text-xs text-slate-400 mb-1">日期</label><input v-model="newItem.date" type="date" class="w-full bg-slate-100 rounded-lg p-3 outline-none"></div>
                 </div>
                 <div class="flex space-x-3 mt-6">
                     <button @click="closeModal" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold">取消</button>
-                    <button @click="confirmAdd" class="flex-1 py-3 rounded-xl bg-blue-500 text-white font-bold">送出</button>
+                    <button @click="confirmAdd" class="flex-1 py-3 rounded-xl bg-blue-500 text-white font-bold">新增</button>
                 </div>
             </div>
         </div>
@@ -234,210 +252,201 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // 🔴 請填入您的 Firebase Config 🔴
-const firebaseConfig = {
-  apiKey: "AIzaSyC67N7fPsE8dHL3GMVfFpyfgrvDnE5AaVQ",
-  authDomain: "hokkaido2026-b35fc.firebaseapp.com",
-  databaseURL: "https://hokkaido2026-b35fc-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "hokkaido2026-b35fc",
-  storageBucket: "hokkaido2026-b35fc.firebasestorage.app",
-  messagingSenderId: "553111751124",
-  appId: "1:553111751124:web:e15688b7b8966926882e41"
-};
-        // 🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
+        // ✅ 已填入您的 Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyC67N7fPsE8dHL3GMVfFpyfgrvDnE5AaVQ",
+            authDomain: "hokkaido2026-b35fc.firebaseapp.com",
+            databaseURL: "https://hokkaido2026-b35fc-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "hokkaido2026-b35fc",
+            storageBucket: "hokkaido2026-b35fc.firebasestorage.app",
+            messagingSenderId: "553111751124",
+            appId: "1:553111751124:web:e15688b7b8966926882e41"
+        };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // 📍 在這裡修改您的行程資料 (包含手動修改距離、加入圖片)
-// 📍 請複製這整段，取代程式碼中的 const scheduleData = [...]
-const scheduleData = [
-    {
-        date: "25", weekday: "Fri", location: "函館", lat: 41.7687, lng: 140.7290,
-        events: [
-            { time: "13:00", title: "抵達新千歲轉國內線", category: "航班", transportType: "plane", travelTime: "1h", note: "轉機往函館", image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80" }, // 飛機
-            { time: "16:30", title: "函館 Check-in", category: "住宿", transportType: "taxi", travelTime: "20m", note: "函館站前飯店", image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" }, // 飯店示意圖
-            { time: "17:30", title: "函館朝市 / 金森倉庫", category: "景點", transportType: "walk", travelTime: "10m", note: "紅磚倉庫散步", image: "https://images.unsplash.com/photo-1542044801-30d3e45ae49a?w=800&q=80" }, // 金森倉庫
-            { time: "19:00", title: "根室花丸壽司", category: "美食", transportType: "walk", travelTime: "5m", note: "迴轉壽司晚餐", image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&q=80" } // 壽司
-        ]
-    },
-    {
-        date: "26", weekday: "Sat", location: "函館", lat: 41.7687, lng: 140.7290,
-        events: [
-            { time: "09:00", title: "櫻丘通賞櫻", category: "景點", transportType: "taxi", travelTime: "15m", note: "櫻花隧道", image: "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&q=80" }, // 櫻花
-            { time: "10:30", title: "五稜郭公園", category: "景點", transportType: "walk", travelTime: "10m", note: "登上五稜郭塔", image: "https://images.unsplash.com/photo-1594970921430-47b19df49b82?w=800&q=80" }, // 五稜郭塔
-            { time: "12:30", title: "小丑漢堡", category: "美食", transportType: "walk", travelTime: "5m", note: "必吃! 幸運小丑", image: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&q=80" }, // 漢堡
-            { time: "15:30", title: "金森倉庫/星巴克", category: "購物", transportType: "bus", travelTime: "20m", note: "休息、喝咖啡", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80" }, // 咖啡
-            { time: "17:30", title: "函館山夜景", category: "景點", transportType: "bus", travelTime: "20m", note: "百萬夜景 Magic Hour", image: "https://images.unsplash.com/photo-1533050487297-09b450131914?w=800&q=80" } // 函館夜景
-        ]
-    },
-    {
-        date: "27", weekday: "Sun", location: "函館", lat: 41.7687, lng: 140.7290,
-        events: [
-            { time: "09:00", title: "函館朝市", category: "美食", transportType: "walk", travelTime: "10m", note: "早餐/釣烏賊", image: "https://images.unsplash.com/photo-1534483509719-3feaee7c30da?w=800&q=80" }, // 海鮮市場
-            { time: "11:00", title: "元町教會群", category: "景點", transportType: "walk", travelTime: "15m", note: "異國風情街道", image: "https://plus.unsplash.com/premium_photo-1661962495669-d72424626bd2?w=800&q=80" }, // 教堂/街道
-            { time: "15:00", title: "函館公園", category: "景點", transportType: "bus", travelTime: "20m", note: "賞櫻與迷你遊樂園", image: "https://images.unsplash.com/photo-1572455044327-7348c1be7267?w=800&q=80" }, // 公園
-            { time: "16:30", title: "金森倉庫最後採買", category: "購物", transportType: "taxi", travelTime: "10m", note: "Snaffle's 起司蛋糕", image: "https://images.unsplash.com/photo-1557925923-4706d5eb3d19?w=800&q=80" }, // 甜點
-            { time: "18:30", title: "阿佐利壽喜燒", category: "美食", transportType: "walk", travelTime: "5m", note: "和牛壽喜燒 (需預約)", image: "https://images.unsplash.com/photo-1588636402444-118e98b04618?w=800&q=80" } // 壽喜燒
-        ]
-    },
-    {
-        date: "28", weekday: "Mon", location: "二世谷", lat: 42.8048, lng: 140.6874,
-        events: [
-            { time: "09:30", title: "函館取車 & 寄行李", category: "租車", transportType: "walk", travelTime: "10m", note: "自駕開始！", image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80" }, // 租車自駕
-            { time: "10:30", title: "大沼國定公園", category: "景點", transportType: "car", travelTime: "40m", note: "駒之岳絕景", image: "https://images.unsplash.com/photo-1624623253738-9e5c4908970d?w=800&q=80" }, // 湖景(示意)
-            { time: "12:00", title: "森町・青葉丘", category: "景點", transportType: "car", travelTime: "20m", note: "賞櫻秘境", image: "https://images.unsplash.com/photo-1493589976221-c2157d91244d?w=800&q=80" }, // 樹林櫻花
-            { time: "14:30", title: "Silo 展望台", category: "景點", transportType: "car", travelTime: "90m", note: "眺望洞爺湖", image: "https://images.unsplash.com/photo-1517769971842-88f4b0051e23?w=800&q=80" }, // 洞爺湖景
-            { time: "15:30", title: "Lake Hill Farm", category: "美食", transportType: "car", travelTime: "10m", note: "牧場冰淇淋", image: "https://images.unsplash.com/photo-1563228965-03d3c4033288?w=800&q=80" }, // 牧場/冰淇淋
-            { time: "18:00", title: "入住二世谷別墅", category: "住宿", transportType: "car", travelTime: "40m", note: "晚餐：海鮮火鍋", image: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800&q=80" } // 別墅/木屋
-        ]
-    },
-    {
-        date: "29", weekday: "Tue", location: "洞爺湖", lat: 42.5646, lng: 140.8576,
-        events: [
-            { time: "11:00", title: "出發洞爺湖", category: "交通", transportType: "car", travelTime: "0m", note: "睡到自然醒", image: "https://images.unsplash.com/photo-1558223694-8451b279d63f?w=800&q=80" }, // 開車風景
-            { time: "12:30", title: "有珠山纜車", category: "景點", transportType: "car", travelTime: "60m", note: "看火山地形", image: "https://images.unsplash.com/photo-1545653494-b772c672b152?w=800&q=80" }, // 纜車
-            { time: "14:30", title: "洞爺湖遊覽船", category: "景點", transportType: "car", travelTime: "20m", note: "中島賞櫻", image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80" }, // 湖與船
-            { time: "17:00", title: "超市補貨", category: "購物", transportType: "car", travelTime: "15m", note: "買晚餐食材", image: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=800&q=80" }, // 超市
-            { time: "19:00", title: "別墅晚餐", category: "美食", transportType: "walk", travelTime: "0m", note: "自製湯咖哩", image: "https://images.unsplash.com/photo-1555126634-323283e090fa?w=800&q=80" } // 咖哩
-        ]
-    },
-    {
-        date: "30", weekday: "Wed", location: "登別", lat: 42.4124, lng: 141.1065,
-        events: [
-            { time: "10:00", title: "出發登別", category: "交通", transportType: "car", travelTime: "0m", note: "移動日", image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80" }, // 公路旅行
-            { time: "11:30", title: "登別櫻花隧道", category: "景點", transportType: "car", travelTime: "90m", note: "賞櫻勝地", image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&q=80" }, // 櫻花路
-            { time: "13:30", title: "登別地獄谷", category: "景點", transportType: "car", travelTime: "10m", note: "地熱景觀", image: "https://images.unsplash.com/photo-1600613277026-64539c279c09?w=800&q=80" }, // 地獄谷/硫磺
-            { time: "16:00", title: "高橋牧場", category: "美食", transportType: "car", travelTime: "80m", note: "年輪蛋糕/泡芙", image: "https://images.unsplash.com/photo-1529566118393-6cd79805d76d?w=800&q=80" }, // 牧場甜點
-            { time: "17:00", title: "京極名水公園", category: "景點", transportType: "car", travelTime: "20m", note: "裝名水回別墅", image: "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800&q=80" }, // 瀑布/水
-            { time: "19:00", title: "別墅晚餐", category: "美食", transportType: "walk", travelTime: "0m", note: "和牛燒肉趴", image: "https://images.unsplash.com/photo-1558030006-450675393462?w=800&q=80" } // 燒肉
-        ]
-    },
-    {
-        date: "01", weekday: "Thu", location: "小樽", lat: 43.1907, lng: 140.9947,
-        events: [
-            { time: "10:00", title: "二世谷還車", category: "租車", transportType: "car", travelTime: "0m", note: "換 Alphard 包車", image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80" }, // 包車/車子
-            { time: "11:30", title: "余市酒廠+堤防", category: "景點", transportType: "car", travelTime: "60m", note: "威士忌酒廠", image: "https://images.unsplash.com/photo-1596706912386-8a7c20c9f692?w=800&q=80" }, // 酒桶
-            { time: "13:00", title: "小樽運河 & 午餐", category: "景點", transportType: "car", travelTime: "30m", note: "若雞時代/政壽司", image: "https://images.unsplash.com/photo-1589453966567-27b4f5319803?w=800&q=80" }, // 小樽運河
-            { time: "15:00", title: "堺町通 / 手宮公園", category: "購物", transportType: "walk", travelTime: "10m", note: "甜點街賞櫻", image: "https://images.unsplash.com/photo-1527265103685-610190369888?w=800&q=80" }, // 甜點/街道
-            { time: "17:30", title: "札幌 Check-in", category: "住宿", transportType: "car", travelTime: "50m", note: "行李合體", image: "https://images.unsplash.com/photo-1620286866164-323620958d56?w=800&q=80" } // 札幌/飯店
-        ]
-    },
-    {
-        date: "02", weekday: "Fri", location: "札幌", lat: 43.0618, lng: 141.3545,
-        events: [
-            { time: "10:00", title: "北海道神宮", category: "景點", transportType: "subway", travelTime: "20m", note: "參拜", image: "https://images.unsplash.com/photo-1590499690106-993d98fb870c?w=800&q=80" }, // 神社
-            { time: "11:30", title: "圓山公園", category: "景點", transportType: "walk", travelTime: "5m", note: "野餐/賞櫻", image: "https://images.unsplash.com/photo-1616556111075-8126b8061e88?w=800&q=80" }, // 公園野餐
-            { time: "12:30", title: "圓山咖啡廳", category: "美食", transportType: "walk", travelTime: "10m", note: "文青午餐", image: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80" }, // 咖啡廳
-            { time: "14:30", title: "北海道大學", category: "景點", transportType: "subway", travelTime: "20m", note: "校園散步", image: "https://images.unsplash.com/photo-1634788102377-160171221430?w=800&q=80" }, // 樹林校園
-            { time: "16:30", title: "狸小路逛街", category: "購物", transportType: "subway", travelTime: "15m", note: "藥妝/伴手禮", image: "https://images.unsplash.com/photo-1579758629938-03607ccdbaba?w=800&q=80" }, // 商店街
-            { time: "18:30", title: "成吉思汗烤肉", category: "美食", transportType: "walk", travelTime: "10m", note: "大口吃羊肉", image: "https://images.unsplash.com/photo-1594040226829-7f251ab46d80?w=800&q=80" } // 烤肉
-        ]
-    },
-    {
-        date: "03", weekday: "Sat", location: "千歲", lat: 42.7937, lng: 141.6795,
-        events: [
-            { time: "10:30", title: "飯店接送", category: "交通", transportType: "taxi", travelTime: "0m", note: "專車直達機場", image: "https://images.unsplash.com/photo-1632304918731-016335129995?w=800&q=80" }, // 計程車
-            { time: "11:30", title: "新千歲機場", category: "購物", transportType: "car", travelTime: "50m", note: "最後採買", image: "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?w=800&q=80" }, // 機場/購物
-            { time: "13:00", title: "搭機返台", category: "航班", transportType: "plane", travelTime: "0m", note: "甜蜜的家", image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80" } // 飛機
-        ]
-    }
-];
+        // 📍 行程資料 (含精選圖片)
+        const scheduleData = [
+            {
+                date: "25", weekday: "Fri", location: "函館", lat: 41.7687, lng: 140.7290,
+                events: [
+                    { time: "13:00", title: "抵達新千歲轉國內線", category: "航班", transportType: "plane", travelTime: "1h", note: "轉機往函館", image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80" }, // 飛機
+                    { time: "16:30", title: "函館 Check-in", category: "住宿", transportType: "taxi", travelTime: "20m", note: "函館站前飯店", image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" }, // 飯店示意圖
+                    { time: "17:30", title: "函館朝市 / 金森倉庫", category: "景點", transportType: "walk", travelTime: "10m", note: "紅磚倉庫散步", image: "https://images.unsplash.com/photo-1542044801-30d3e45ae49a?w=800&q=80" }, // 金森倉庫
+                    { time: "19:00", title: "根室花丸壽司", category: "美食", transportType: "walk", travelTime: "5m", note: "迴轉壽司晚餐", image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&q=80" } // 壽司
+                ]
+            },
+            {
+                date: "26", weekday: "Sat", location: "函館", lat: 41.7687, lng: 140.7290,
+                events: [
+                    { time: "09:00", title: "櫻丘通賞櫻", category: "景點", transportType: "taxi", travelTime: "15m", note: "櫻花隧道", image: "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&q=80" }, // 櫻花
+                    { time: "10:30", title: "五稜郭公園", category: "景點", transportType: "walk", travelTime: "10m", note: "登上五稜郭塔", image: "https://images.unsplash.com/photo-1594970921430-47b19df49b82?w=800&q=80" }, // 五稜郭塔
+                    { time: "12:30", title: "小丑漢堡", category: "美食", transportType: "walk", travelTime: "5m", note: "必吃! 幸運小丑", image: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&q=80" }, // 漢堡
+                    { time: "15:30", title: "金森倉庫/星巴克", category: "購物", transportType: "bus", travelTime: "20m", note: "休息、喝咖啡", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80" }, // 咖啡
+                    { time: "17:30", title: "函館山夜景", category: "景點", transportType: "bus", travelTime: "20m", note: "百萬夜景 Magic Hour", image: "https://images.unsplash.com/photo-1533050487297-09b450131914?w=800&q=80" } // 函館夜景
+                ]
+            },
+            {
+                date: "27", weekday: "Sun", location: "函館", lat: 41.7687, lng: 140.7290,
+                events: [
+                    { time: "09:00", title: "函館朝市", category: "美食", transportType: "walk", travelTime: "10m", note: "早餐/釣烏賊", image: "https://images.unsplash.com/photo-1534483509719-3feaee7c30da?w=800&q=80" }, // 海鮮市場
+                    { time: "11:00", title: "元町教會群", category: "景點", transportType: "walk", travelTime: "15m", note: "異國風情街道", image: "https://plus.unsplash.com/premium_photo-1661962495669-d72424626bd2?w=800&q=80" }, // 教堂/街道
+                    { time: "15:00", title: "函館公園", category: "景點", transportType: "bus", travelTime: "20m", note: "賞櫻與迷你遊樂園", image: "https://images.unsplash.com/photo-1572455044327-7348c1be7267?w=800&q=80" }, // 公園
+                    { time: "16:30", title: "金森倉庫最後採買", category: "購物", transportType: "taxi", travelTime: "10m", note: "Snaffle's 起司蛋糕", image: "https://images.unsplash.com/photo-1557925923-4706d5eb3d19?w=800&q=80" }, // 甜點
+                    { time: "18:30", title: "阿佐利壽喜燒", category: "美食", transportType: "walk", travelTime: "5m", note: "和牛壽喜燒 (需預約)", image: "https://images.unsplash.com/photo-1588636402444-118e98b04618?w=800&q=80" } // 壽喜燒
+                ]
+            },
+            {
+                date: "28", weekday: "Mon", location: "二世谷", lat: 42.8048, lng: 140.6874,
+                events: [
+                    { time: "09:30", title: "函館取車 & 寄行李", category: "租車", transportType: "walk", travelTime: "10m", note: "自駕開始！", image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80" }, // 租車自駕
+                    { time: "10:30", title: "大沼國定公園", category: "景點", transportType: "car", travelTime: "40m", note: "駒之岳絕景", image: "https://images.unsplash.com/photo-1624623253738-9e5c4908970d?w=800&q=80" }, // 湖景(示意)
+                    { time: "12:00", title: "森町・青葉丘", category: "景點", transportType: "car", travelTime: "20m", note: "賞櫻秘境", image: "https://images.unsplash.com/photo-1493589976221-c2157d91244d?w=800&q=80" }, // 樹林櫻花
+                    { time: "14:30", title: "Silo 展望台", category: "景點", transportType: "car", travelTime: "90m", note: "眺望洞爺湖", image: "https://images.unsplash.com/photo-1517769971842-88f4b0051e23?w=800&q=80" }, // 洞爺湖景
+                    { time: "15:30", title: "Lake Hill Farm", category: "美食", transportType: "car", travelTime: "10m", note: "牧場冰淇淋", image: "https://images.unsplash.com/photo-1563228965-03d3c4033288?w=800&q=80" }, // 牧場/冰淇淋
+                    { time: "18:00", title: "入住二世谷別墅", category: "住宿", transportType: "car", travelTime: "40m", note: "晚餐：海鮮火鍋", image: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800&q=80" } // 別墅/木屋
+                ]
+            },
+            {
+                date: "29", weekday: "Tue", location: "洞爺湖", lat: 42.5646, lng: 140.8576,
+                events: [
+                    { time: "11:00", title: "出發洞爺湖", category: "交通", transportType: "car", travelTime: "0m", note: "睡到自然醒", image: "https://images.unsplash.com/photo-1558223694-8451b279d63f?w=800&q=80" }, // 開車風景
+                    { time: "12:30", title: "有珠山纜車", category: "景點", transportType: "car", travelTime: "60m", note: "看火山地形", image: "https://images.unsplash.com/photo-1545653494-b772c672b152?w=800&q=80" }, // 纜車
+                    { time: "14:30", title: "洞爺湖遊覽船", category: "景點", transportType: "car", travelTime: "20m", note: "中島賞櫻", image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80" }, // 湖與船
+                    { time: "17:00", title: "超市補貨", category: "購物", transportType: "car", travelTime: "15m", note: "買晚餐食材", image: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=800&q=80" }, // 超市
+                    { time: "19:00", title: "別墅晚餐", category: "美食", transportType: "walk", travelTime: "0m", note: "自製湯咖哩", image: "https://images.unsplash.com/photo-1555126634-323283e090fa?w=800&q=80" } // 咖哩
+                ]
+            },
+            {
+                date: "30", weekday: "Wed", location: "登別", lat: 42.4124, lng: 141.1065,
+                events: [
+                    { time: "10:00", title: "出發登別", category: "交通", transportType: "car", travelTime: "0m", note: "移動日", image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80" }, // 公路旅行
+                    { time: "11:30", title: "登別櫻花隧道", category: "景點", transportType: "car", travelTime: "90m", note: "賞櫻勝地", image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&q=80" }, // 櫻花路
+                    { time: "13:30", title: "登別地獄谷", category: "景點", transportType: "car", travelTime: "10m", note: "地熱景觀", image: "https://images.unsplash.com/photo-1600613277026-64539c279c09?w=800&q=80" }, // 地獄谷/硫磺
+                    { time: "16:00", title: "高橋牧場", category: "美食", transportType: "car", travelTime: "80m", note: "年輪蛋糕/泡芙", image: "https://images.unsplash.com/photo-1529566118393-6cd79805d76d?w=800&q=80" }, // 牧場甜點
+                    { time: "17:00", title: "京極名水公園", category: "景點", transportType: "car", travelTime: "20m", note: "裝名水回別墅", image: "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800&q=80" }, // 瀑布/水
+                    { time: "19:00", title: "別墅晚餐", category: "美食", transportType: "walk", travelTime: "0m", note: "和牛燒肉趴", image: "https://images.unsplash.com/photo-1558030006-450675393462?w=800&q=80" } // 燒肉
+                ]
+            },
+            {
+                date: "01", weekday: "Thu", location: "小樽", lat: 43.1907, lng: 140.9947,
+                events: [
+                    { time: "10:00", title: "二世谷還車", category: "租車", transportType: "car", travelTime: "0m", note: "換 Alphard 包車", image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80" }, // 包車/車子
+                    { time: "11:30", title: "余市酒廠+堤防", category: "景點", transportType: "car", travelTime: "60m", note: "威士忌酒廠", image: "https://images.unsplash.com/photo-1596706912386-8a7c20c9f692?w=800&q=80" }, // 酒桶
+                    { time: "13:00", title: "小樽運河 & 午餐", category: "景點", transportType: "car", travelTime: "30m", note: "若雞時代/政壽司", image: "https://images.unsplash.com/photo-1589453966567-27b4f5319803?w=800&q=80" }, // 小樽運河
+                    { time: "15:00", title: "堺町通 / 手宮公園", category: "購物", transportType: "walk", travelTime: "10m", note: "甜點街賞櫻", image: "https://images.unsplash.com/photo-1527265103685-610190369888?w=800&q=80" }, // 甜點/街道
+                    { time: "17:30", title: "札幌 Check-in", category: "住宿", transportType: "car", travelTime: "50m", note: "行李合體", image: "https://images.unsplash.com/photo-1620286866164-323620958d56?w=800&q=80" } // 札幌/飯店
+                ]
+            },
+            {
+                date: "02", weekday: "Fri", location: "札幌", lat: 43.0618, lng: 141.3545,
+                events: [
+                    { time: "10:00", title: "北海道神宮", category: "景點", transportType: "subway", travelTime: "20m", note: "參拜", image: "https://images.unsplash.com/photo-1590499690106-993d98fb870c?w=800&q=80" }, // 神社
+                    { time: "11:30", title: "圓山公園", category: "景點", transportType: "walk", travelTime: "5m", note: "野餐/賞櫻", image: "https://images.unsplash.com/photo-1616556111075-8126b8061e88?w=800&q=80" }, // 公園野餐
+                    { time: "12:30", title: "圓山咖啡廳", category: "美食", transportType: "walk", travelTime: "10m", note: "文青午餐", image: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80" }, // 咖啡廳
+                    { time: "14:30", title: "北海道大學", category: "景點", transportType: "subway", travelTime: "20m", note: "校園散步", image: "https://images.unsplash.com/photo-1634788102377-160171221430?w=800&q=80" }, // 樹林校園
+                    { time: "16:30", title: "狸小路逛街", category: "購物", transportType: "subway", travelTime: "15m", note: "藥妝/伴手禮", image: "https://images.unsplash.com/photo-1579758629938-03607ccdbaba?w=800&q=80" }, // 商店街
+                    { time: "18:30", title: "成吉思汗烤肉", category: "美食", transportType: "walk", travelTime: "10m", note: "大口吃羊肉", image: "https://images.unsplash.com/photo-1594040226829-7f251ab46d80?w=800&q=80" } // 烤肉
+                ]
+            },
+            {
+                date: "03", weekday: "Sat", location: "千歲", lat: 42.7937, lng: 141.6795,
+                events: [
+                    { time: "10:30", title: "飯店接送", category: "交通", transportType: "taxi", travelTime: "0m", note: "專車直達機場", image: "https://images.unsplash.com/photo-1632304918731-016335129995?w=800&q=80" }, // 計程車
+                    { time: "11:30", title: "新千歲機場", category: "購物", transportType: "car", travelTime: "50m", note: "最後採買", image: "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?w=800&q=80" }, // 機場/購物
+                    { time: "13:00", title: "搭機返台", category: "航班", transportType: "plane", travelTime: "0m", note: "甜蜜的家", image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80" } // 飛機
+                ]
+            }
+        ];
 
         createApp({
             data() {
                 return {
-                    isLocked: true, password: ['2','0','2','5'], inputPassword: [], loginError: false,
-                    // 📸 頁首背景圖片設定 (在這裡換網址)
+                    isLocked: true, password: ['2','0','2','5'], inputPassword: [], 
                     headerImage: 'https://images.unsplash.com/photo-1548266652-99cf27701ced?q=80&w=1920&auto=format&fit=crop',
-                    
                     currentTab: 'schedule', scheduleData: scheduleData, selectedDayIndex: 0,
-                    yenAmount: 1000, 
-                    exchangeRate: 0.215, // 預設匯率
-                    
+                    yenAmount: 1000, exchangeRate: 0.215,
                     shoppingList: [], expenseList: [], loading: true, dbConnected: false,
-                    showAddModal: null, newItem: { name: '', amount: '', date: '', creator: '媽媽' },
-                    infoCards: [ { title: '航班資訊', bgClass: 'bg-blue-50 text-blue-500', icon: 'fa-solid fa-plane' }, { title: '住宿列表', bgClass: 'bg-orange-50 text-orange-500', icon: 'fa-solid fa-hotel' }, { title: '租車資訊', bgClass: 'bg-green-50 text-green-500', icon: 'fa-solid fa-car' }, { title: '緊急醫療', bgClass: 'bg-red-50 text-red-500', icon: 'fa-solid fa-suitcase-medical' } ],
-                    weatherLoading: false, currentWeather: { temp: '--', desc: '載入中', icon: 'fa-solid fa-cloud', wind: '-' }
+                    
+                    // 👨‍👩‍👧‍👦 人物設定
+                    familyMembers: [
+                        { name: '爸爸', icon: 'fa-solid fa-user-tie', bg: 'bg-blue-100 text-blue-500' },
+                        { name: '媽媽', icon: 'fa-solid fa-user-nurse', bg: 'bg-pink-100 text-pink-500' },
+                        { name: '哥哥', icon: 'fa-solid fa-user-graduate', bg: 'bg-green-100 text-green-500' },
+                        { name: '弟弟', icon: 'fa-solid fa-child-reaching', bg: 'bg-yellow-100 text-yellow-500' }
+                    ],
+                    activeMember: null, // 當前選中的人
+
+                    showAddModal: null, newItem: { name: '', amount: '', date: '', recipient: '' },
+                    infoCards: [ { title: '航班', bgClass: 'bg-blue-50 text-blue-500', icon: 'fa-solid fa-plane' }, { title: '住宿', bgClass: 'bg-orange-50 text-orange-500', icon: 'fa-solid fa-hotel' }, { title: '租車', bgClass: 'bg-green-50 text-green-500', icon: 'fa-solid fa-car' }, { title: '醫療', bgClass: 'bg-red-50 text-red-500', icon: 'fa-solid fa-suitcase-medical' } ],
+                    weatherLoading: false, currentWeather: { temp: '--', desc: '載入中', icon: 'fa-solid fa-cloud' }
                 }
             },
             mounted() {
-                const shoppingRef = ref(db, 'shopping');
-                onValue(shoppingRef, (snapshot) => {
-                    const data = snapshot.val();
-                    this.shoppingList = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-                    this.loading = false;
-                    this.dbConnected = true;
-                });
-                const expenseRef = ref(db, 'expenses');
-                onValue(expenseRef, (snapshot) => {
-                    const data = snapshot.val();
-                    this.expenseList = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-                });
+                onValue(ref(db, 'shopping'), (s) => { const d=s.val(); this.shoppingList=d?Object.keys(d).map(k=>({id:k,...d[k]})):[]; this.loading=false; this.dbConnected=true; });
+                onValue(ref(db, 'expenses'), (s) => { const d=s.val(); this.expenseList=d?Object.keys(d).map(k=>({id:k,...d[k]})):[]; });
                 this.newItem.date = new Date().toISOString().split('T')[0];
                 this.fetchWeather();
             },
-            watch: {
-                selectedDayIndex() { this.fetchWeather(); }
-            },
+            watch: { selectedDayIndex() { this.fetchWeather(); } },
             computed: {
                 currentSchedule() { return this.scheduleData[this.selectedDayIndex] || { events: [] }; },
                 calculatedTwd() { return Math.round(this.yenAmount * this.exchangeRate).toLocaleString(); },
-                totalExpenseTWD() { return Math.round(this.expenseList.reduce((sum, item) => sum + Number(item.amount), 0) * this.exchangeRate); }
+                totalExpenseTWD() { return Math.round(this.expenseList.reduce((sum, item) => sum + Number(item.amount), 0) * this.exchangeRate); },
+                // 🔍 過濾邏輯
+                filteredShoppingList() { return this.shoppingList.filter(item => item.creator === this.activeMember); },
+                filteredExpenseList() { return this.expenseList.filter(item => item.creator === this.activeMember); }
             },
             methods: {
+                // 📊 統計方法
+                getMemberItemCount(name, type) { 
+                    const list = type === 'shopping' ? this.shoppingList : this.expenseList;
+                    return list.filter(i => i.creator === name).length;
+                },
+                getMemberTotal(name, type) {
+                    const list = type === 'shopping' ? this.shoppingList : this.expenseList;
+                    return list.filter(i => i.creator === name).reduce((sum, i) => sum + Number(type==='shopping' ? i.price : i.amount), 0);
+                },
+                switchTab(tab) { this.currentTab = tab; this.activeMember = null; }, // 切換分頁時重置選人
+
                 async fetchWeather() {
-                    this.weatherLoading = true;
-                    const day = this.currentSchedule;
-                    if (!day.lat) return;
+                    this.weatherLoading = true; const day = this.currentSchedule; if (!day.lat) return;
                     try {
-                        const url = `https://api.open-meteo.com/v1/forecast?latitude=${day.lat}&longitude=${day.lng}&current_weather=true`;
-                        const res = await fetch(url);
+                        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${day.lat}&longitude=${day.lng}&current_weather=true`);
                         const data = await res.json();
                         const w = data.current_weather;
-                        let icon = 'fa-solid fa-cloud';
-                        let desc = '多雲';
-                        const code = w.weathercode;
-                        if(code === 0) { icon = 'fa-solid fa-sun text-yellow-400'; desc = '晴朗'; }
-                        else if(code <= 3) { icon = 'fa-solid fa-cloud-sun text-slate-100'; desc = '多雲'; }
-                        else if(code <= 67) { icon = 'fa-solid fa-cloud-rain text-blue-300'; desc = '下雨'; }
-                        else if(code <= 77) { icon = 'fa-solid fa-snowflake text-white'; desc = '下雪'; }
-                        else { icon = 'fa-solid fa-cloud-showers-heavy text-slate-300'; desc = '陣雨'; }
-                        this.currentWeather = { temp: w.temperature, desc: desc, icon: icon, wind: w.windspeed };
-                    } catch (e) { this.currentWeather.desc = "連線失敗"; } finally { this.weatherLoading = false; }
+                        let icon='fa-solid fa-cloud', desc='多雲';
+                        if(w.weathercode===0){icon='fa-solid fa-sun text-yellow-400';desc='晴';}
+                        else if(w.weathercode<=67){icon='fa-solid fa-cloud-rain text-blue-300';desc='雨';}
+                        else if(w.weathercode<=77){icon='fa-solid fa-snowflake text-white';desc='雪';}
+                        this.currentWeather = { temp: w.temperature, desc: desc, icon: icon };
+                    } catch(e){} finally{this.weatherLoading=false;}
                 },
                 enterDigit(n) { if(this.inputPassword.length<4) { this.inputPassword.push(String(n)); if(this.inputPassword.length===4) this.checkPassword(); } },
                 backspace() { this.inputPassword.pop(); },
-                checkPassword() { 
-                    if(JSON.stringify(this.inputPassword) === JSON.stringify(this.password)) setTimeout(() => this.isLocked = false, 300);
-                    else { this.loginError = true; setTimeout(() => { this.inputPassword=[]; this.loginError=false; }, 1000); }
-                },
+                checkPassword() { if(JSON.stringify(this.inputPassword) === JSON.stringify(this.password)) setTimeout(() => this.isLocked = false, 300); },
                 tabClass(tab) { return this.currentTab === tab ? 'bg-blue-500 text-white scale-110' : 'bg-white text-slate-400 hover:bg-blue-50'; },
                 getTabIcon(t) { return {'schedule':'fa-solid fa-map-location-dot','info':'fa-solid fa-circle-info','shopping':'fa-solid fa-basket-shopping','expense':'fa-solid fa-yen-sign'}[t]; },
                 getCategoryColor(c) { return {'景點':'bg-pink-400','美食':'bg-orange-400','住宿':'bg-indigo-400','購物':'bg-yellow-400','航班':'bg-blue-400','租車':'bg-green-500','交通':'bg-slate-400'}[c] || 'bg-gray-400'; },
                 getCategoryIcon(c) { return {'景點':'fa-solid fa-camera','美食':'fa-solid fa-utensils','住宿':'fa-solid fa-bed','購物':'fa-solid fa-bag-shopping','航班':'fa-solid fa-plane','租車':'fa-solid fa-car','交通':'fa-solid fa-train-subway'}[c] || 'fa-solid fa-circle'; },
                 getTransportIcon(t) { return {'walk':'fa-solid fa-person-walking','car':'fa-solid fa-car-side','bus':'fa-solid fa-bus','subway':'fa-solid fa-train-subway','taxi':'fa-solid fa-taxi','plane':'fa-solid fa-plane-up'}[t] || 'fa-solid fa-arrow-right'; },
-                closeModal() { this.showAddModal = null; this.newItem = { name:'', amount:'', date: new Date().toISOString().split('T')[0], creator: '媽媽' }; },
+                
+                closeModal() { this.showAddModal = null; this.newItem = { name:'', amount:'', date: new Date().toISOString().split('T')[0], recipient: '' }; },
                 confirmAdd() {
                     if (!this.newItem.name) return;
+                    // 🔥 自動帶入當前 activeMember
                     if (this.showAddModal === 'shopping') {
-                        push(ref(db, 'shopping'), { name: this.newItem.name, price: this.newItem.amount || 0, creator: this.newItem.creator, checked: false });
+                        push(ref(db, 'shopping'), { name: this.newItem.name, price: this.newItem.amount || 0, creator: this.activeMember, recipient: this.newItem.recipient, checked: false });
                     } else {
-                        push(ref(db, 'expenses'), { name: this.newItem.name, amount: this.newItem.amount || 0, date: this.newItem.date, creator: this.newItem.creator });
+                        push(ref(db, 'expenses'), { name: this.newItem.name, amount: this.newItem.amount || 0, date: this.newItem.date, creator: this.activeMember });
                     }
                     this.closeModal();
                 },
-                deleteItem(type, id) {
-                    if(!confirm('確定要刪除嗎？')) return;
-                    const path = type === 'shopping' ? `shopping/${id}` : `expenses/${id}`;
-                    remove(ref(db, path));
-                },
-                toggleCheck(id, currentStatus) {
-                    update(ref(db, `shopping/${id}`), { checked: !currentStatus });
-                }
+                deleteItem(type, id) { if(confirm('確定刪除?')) remove(ref(db, (type==='shopping'?'shopping/':'expenses/')+id)); },
+                toggleCheck(id, s) { update(ref(db, `shopping/${id}`), { checked: !s }); }
             }
         }).mount('#app');
     </script>
 </body>
-
 </html>
