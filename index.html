@@ -2,18 +2,17 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小森林北海道 2026 (櫻花版)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>北海道 2026 (櫻花飄落版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <style>
-        /* 🌸 背景設定：櫻花圖片 */
         body { 
             font-family: 'Noto Sans TC', sans-serif; 
-            /* 背景圖：淡淡的櫻花 */
+            /* 主背景 */
             background-image: url('https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=1920&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
@@ -21,57 +20,90 @@
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* 圓弧效果 */
         .header-curve { border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; }
-        
-        .fade-enter-active, .fade-leave-active { transition: opacity 0.5s; }
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.8s; }
         .fade-enter-from, .fade-leave-to { opacity: 0; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #f472b6; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* 🌸 櫻花飄落動畫 */
+        .sakura {
+            position: absolute;
+            top: -10%;
+            color: #ffb7b2;
+            opacity: 0.8;
+            animation: fall linear infinite;
+            pointer-events: none; /* 讓點擊穿透 */
+        }
+        @keyframes fall {
+            0% { top: -10%; transform: translateX(0) rotate(0deg); opacity: 0.8; }
+            100% { top: 110%; transform: translateX(50px) rotate(360deg); opacity: 0; }
+        }
     </style>
 </head>
-<body class="text-slate-600">
+<body class="text-slate-600 overflow-x-hidden">
 
-    <div id="app" class="max-w-md mx-auto bg-white/90 backdrop-blur-sm min-h-screen shadow-2xl relative pb-24 overflow-hidden">
+    <div id="app" class="max-w-md mx-auto bg-white/90 backdrop-blur-sm min-h-screen shadow-2xl relative pb-24">
         
         <transition name="fade">
-            <div v-if="isLocked" class="absolute inset-0 z-[100] bg-gradient-to-br from-pink-400 to-blue-400 flex flex-col items-center justify-center text-white p-10">
-                <i class="fa-solid fa-cloud-sun text-6xl mb-4 opacity-80 animate-pulse"></i>
-                <h2 class="text-2xl font-bold mb-2 text-shadow">Hokkaido 2026</h2>
-                <p class="text-sm opacity-90 mb-8 font-medium">🌸 Family Spring Trip 🌸</p>
-                <div class="flex space-x-4 mb-8">
-                    <div v-for="(digit, idx) in inputPassword" :key="idx" class="w-4 h-4 rounded-full shadow" :class="digit ? 'bg-white' : 'bg-white/40'"></div>
+            <div v-if="isLocked" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center text-white overflow-hidden" 
+                 style="background-image: url('https://images.unsplash.com/photo-1493589976221-c2157d91244d?q=80&w=1920&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                
+                <div class="absolute inset-0 bg-black/30 backdrop-blur-[2px]"></div>
+
+                <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                    <i class="fa-solid fa-seedling sakura text-xl" style="left: 10%; animation-duration: 5s; animation-delay: 0s;"></i>
+                    <i class="fa-brands fa-pagelines sakura text-2xl" style="left: 30%; animation-duration: 7s; animation-delay: 1s;"></i>
+                    <i class="fa-solid fa-leaf sakura text-lg" style="left: 50%; animation-duration: 4s; animation-delay: 2s;"></i>
+                    <i class="fa-solid fa-seedling sakura text-xl" style="left: 70%; animation-duration: 6s; animation-delay: 0.5s;"></i>
+                    <i class="fa-brands fa-pagelines sakura text-2xl" style="left: 90%; animation-duration: 5s; animation-delay: 3s;"></i>
                 </div>
-                <div class="grid grid-cols-3 gap-6 w-64">
-                    <button v-for="n in 9" :key="n" @click="enterDigit(n)" class="w-16 h-16 rounded-full border-2 border-white/50 flex items-center justify-center text-xl font-bold active:bg-white/20 transition shadow-lg">{{ n }}</button>
-                    <div class="col-start-2">
-                        <button @click="enterDigit(0)" class="w-16 h-16 rounded-full border-2 border-white/50 flex items-center justify-center text-xl font-bold active:bg-white/20 transition shadow-lg">0</button>
+
+                <div class="relative z-10 flex flex-col items-center w-full max-w-xs p-6 bg-white/10 rounded-3xl border border-white/20 shadow-2xl backdrop-blur-md">
+                    <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-4 border border-white/30 animate-bounce">
+                        <i class="fa-solid fa-lock text-2xl"></i>
                     </div>
-                    <div class="col-start-3 flex items-center justify-center">
-                        <button @click="backspace()" class="w-16 h-16 flex items-center justify-center text-xl active:opacity-50"><i class="fa-solid fa-delete-left"></i></button>
+                    <h2 class="text-3xl font-bold mb-1 tracking-widest text-shadow">北海道 2026</h2>
+                    <p class="text-sm opacity-90 mb-8 font-light tracking-wide">Family Spring Trip</p>
+                    
+                    <div class="flex space-x-4 mb-8 h-6">
+                        <transition-group name="list">
+                            <div v-for="(digit, idx) in 4" :key="idx" class="w-4 h-4 rounded-full border-2 border-white transition-all duration-300" 
+                                 :class="inputPassword.length > idx ? 'bg-white scale-110 shadow-[0_0_10px_white]' : 'bg-transparent'"></div>
+                        </transition-group>
                     </div>
+
+                    <div class="grid grid-cols-3 gap-5 w-full px-4">
+                        <button v-for="n in 9" :key="n" @click="enterDigit(n)" class="w-16 h-16 rounded-full bg-white/10 border border-white/30 flex items-center justify-center text-2xl font-light active:bg-white/40 transition hover:bg-white/20">{{ n }}</button>
+                        <div class="col-start-2">
+                            <button @click="enterDigit(0)" class="w-16 h-16 rounded-full bg-white/10 border border-white/30 flex items-center justify-center text-2xl font-light active:bg-white/40 transition hover:bg-white/20">0</button>
+                        </div>
+                        <div class="col-start-3 flex items-center justify-center">
+                            <button @click="backspace()" class="w-16 h-16 flex items-center justify-center text-xl active:opacity-50 text-white/80"><i class="fa-solid fa-delete-left"></i></button>
+                        </div>
+                    </div>
+                    <p v-if="loginError" class="absolute -bottom-8 text-pink-300 font-bold animate-pulse text-shadow">密碼錯誤</p>
                 </div>
             </div>
         </transition>
 
         <header class="relative z-10">
             <div class="h-[170px] w-full bg-pink-200 header-curve overflow-hidden relative shadow-md">
-                <img :src="headerImage" class="w-full h-full object-cover object-center opacity-90">
+                <img :src="headerImage" class="w-full h-full object-cover object-center opacity-90 transition duration-1000 hover:scale-105">
                 <div class="absolute bottom-6 left-6 text-white text-shadow">
-                    <h1 class="text-xl font-bold tracking-widest drop-shadow-md">HOKKAIDO</h1>
-                    <p class="text-xs font-light tracking-wider drop-shadow-md">Sakura Trip 2026</p>
+                    <h1 class="text-2xl font-bold tracking-widest drop-shadow-md">北海道 2026</h1>
+                    <p class="text-xs font-light tracking-wider drop-shadow-md opacity-90">櫻花與美食之旅 🌸</p>
                 </div>
-                <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-md text-white text-[10px] px-3 py-1 rounded-full flex items-center border border-white/30">
+                <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-md text-white text-[10px] px-3 py-1 rounded-full flex items-center border border-white/30 shadow-sm">
                     <div class="w-2 h-2 rounded-full mr-2" :class="dbConnected ? 'bg-green-400' : 'bg-red-400 animate-pulse'"></div>
                     {{ dbConnected ? '已連線' : '連線中' }}
                 </div>
             </div>
         </header>
 
-        <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-1 z-50 bg-white/80 backdrop-blur-md px-3 py-2 rounded-full shadow-xl border border-white/50 ring-1 ring-pink-100">
+        <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-1 z-50 bg-white/90 backdrop-blur-md px-3 py-2 rounded-full shadow-2xl border border-white/50 ring-1 ring-pink-100">
             <button v-for="tab in ['schedule', 'food', 'shopping', 'expense', 'tools']" @click="switchTab(tab)" 
-                    :class="currentTab === tab ? 'bg-pink-400 text-white shadow-lg scale-110' : 'text-slate-400 hover:text-pink-400'" 
+                    :class="currentTab === tab ? 'bg-gradient-to-tr from-pink-400 to-pink-500 text-white shadow-lg scale-110' : 'text-slate-400 hover:text-pink-400'" 
                     class="w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300">
                 <i :class="getTabIcon(tab)" class="text-lg"></i>
             </button>
@@ -82,8 +114,8 @@
             <div v-if="currentTab === 'schedule'">
                  <div class="flex overflow-x-auto space-x-2 pb-2 hide-scrollbar mb-2">
                     <div v-for="(day, index) in scheduleData" :key="index" @click="selectedDayIndex = index"
-                         :class="selectedDayIndex === index ? 'bg-gradient-to-b from-pink-400 to-pink-500 text-white ring-2 ring-pink-200 shadow-md' : 'bg-white text-slate-400 border border-pink-100'"
-                         class="flex-shrink-0 w-14 h-16 rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all">
+                         :class="selectedDayIndex === index ? 'bg-gradient-to-b from-pink-400 to-pink-500 text-white ring-2 ring-pink-200 shadow-md transform -translate-y-1' : 'bg-white text-slate-400 border border-pink-100'"
+                         class="flex-shrink-0 w-14 h-16 rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300">
                         <span class="text-[10px] font-medium opacity-80">{{ day.weekday }}</span>
                         <span class="text-lg font-bold font-mono">{{ day.date }}</span>
                         <span class="text-[9px] opacity-60">D{{ index + 1 }}</span>
@@ -92,29 +124,27 @@
 
                 <div class="bg-gradient-to-r from-blue-400 to-pink-300 text-white rounded-2xl p-4 mb-4 shadow-sm flex justify-between items-center relative overflow-hidden min-h-[90px]">
                     <div class="relative z-10">
-                        <div class="text-xs opacity-90"><i class="fa-solid fa-location-dot mr-1"></i>{{ currentSchedule.location }}</div>
+                        <div class="text-xs opacity-90 flex items-center"><i class="fa-solid fa-location-dot mr-1"></i>{{ currentSchedule.location }} <span class="ml-2 text-[10px] opacity-70 border border-white/30 px-1 rounded">即時</span></div>
                         <div v-if="weatherLoading" class="mt-1 text-sm opacity-80">天氣載入中...</div>
                         <div v-else><div class="text-2xl font-bold mt-1">{{ currentWeather.temp }}°C <span class="text-sm font-normal">{{ currentWeather.desc }}</span></div></div>
                     </div>
-                    <i :class="currentWeather.icon" class="text-4xl opacity-80 relative z-10"></i>
-                    <div class="absolute -right-2 -bottom-2 text-6xl opacity-10 rotate-12"><i class="fa-brands fa-pagelines"></i></div>
+                    <i :class="currentWeather.icon" class="text-4xl opacity-80 relative z-10 drop-shadow-md"></i>
+                    <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-white/20 rounded-full blur-xl"></div>
                 </div>
 
                 <div class="space-y-0">
                     <div v-for="(item, idx) in currentSchedule.events" :key="idx" class="relative pl-5 pb-6 border-l-2 border-dashed border-pink-200 last:border-0">
                         <div class="absolute -left-[7px] top-0 w-3 h-3 rounded-full bg-pink-400 ring-2 ring-pink-100"></div>
-                        
                         <div v-if="idx > 0" class="flex items-center text-[10px] text-slate-400 mb-1 ml-1"><i :class="getTransportIcon(item.transportType)" class="mr-1"></i><span>{{ item.travelTime }}</span></div>
                         <div v-else-if="idx === 0" class="flex items-center text-[10px] text-slate-400 mb-1 ml-1"><i class="fa-solid fa-bed mr-1"></i><span>從住宿出發</span></div>
-                        
-                        <div class="bg-white/80 backdrop-blur p-3 rounded-2xl shadow-sm border border-pink-50 relative overflow-hidden group hover:shadow-md transition">
-                            <span :class="getCategoryColor(item.category)" class="absolute top-0 right-0 px-2 py-1 text-[9px] rounded-bl-lg font-bold text-white">{{ item.category }}</span>
+                        <div class="bg-white/80 backdrop-blur p-3 rounded-2xl shadow-sm border border-pink-50 relative overflow-hidden group hover:shadow-md transition duration-300">
+                            <span :class="getCategoryColor(item.category)" class="absolute top-0 right-0 px-2 py-1 text-[9px] rounded-bl-lg font-bold text-white shadow-sm">{{ item.category }}</span>
                             <div class="flex items-start">
                                 <div class="mr-3 mt-1 text-pink-500 text-lg"><i :class="getCategoryIcon(item.category)"></i></div>
                                 <div class="flex-1">
                                     <h3 class="font-bold text-slate-700 text-base leading-tight mb-1">{{ item.title }}</h3>
                                     <p class="text-[10px] text-slate-500 font-mono mb-2"><i class="fa-regular fa-clock mr-1"></i>{{ item.time }}</p>
-                                    <div v-if="item.image" class="mb-2 mt-1 rounded-lg overflow-hidden h-28 w-full relative"><img :src="item.image" class="w-full h-full object-cover"></div>
+                                    <div v-if="item.image" class="mb-2 mt-1 rounded-lg overflow-hidden h-28 w-full relative group-hover:shadow-inner transition"><img :src="item.image" class="w-full h-full object-cover transition duration-700 group-hover:scale-110"></div>
                                     <p v-if="item.note" class="text-xs text-slate-600 bg-slate-50/50 p-2 rounded-lg mb-2 border border-slate-100">{{ item.note }}</p>
                                     <a :href="'https://www.google.com/maps/search/?api=1&query=' + item.title" target="_blank" class="inline-flex items-center text-[10px] font-bold text-blue-500 mt-1 hover:text-blue-700"><i class="fa-solid fa-location-arrow mr-1"></i> 導航</a>
                                 </div>
@@ -130,7 +160,7 @@
                 </h2>
                 <div v-if="foodLocations.length === 0" class="text-center py-10 text-slate-400"><p>按右下角新增美食地點！</p></div>
                 <div v-for="loc in foodLocations" :key="loc" class="mb-3">
-                    <div class="flex justify-between items-center bg-orange-50/80 border border-orange-100 p-3 rounded-xl cursor-pointer" @click="toggleLocation(loc)">
+                    <div class="flex justify-between items-center bg-orange-50/80 border border-orange-100 p-3 rounded-xl cursor-pointer hover:bg-orange-100 transition" @click="toggleLocation(loc)">
                         <h3 class="font-bold text-orange-700 text-sm"><i class="fa-solid fa-map-pin mr-2"></i>{{ loc }}</h3>
                         <i class="fa-solid fa-chevron-down text-orange-400 transition text-xs" :class="{'rotate-180': expandedLocations[loc]}"></i>
                     </div>
@@ -148,7 +178,7 @@
                         <div v-if="getFoodsByLocation(loc).length === 0" class="text-xs text-slate-400 italic p-2">還沒許願美食...</div>
                     </div>
                 </div>
-                <button @click="showAddModal = 'food'" class="fixed bottom-24 right-6 w-12 h-12 bg-orange-500 text-white rounded-full shadow-lg flex items-center justify-center text-xl z-40 hover:scale-110 transition"><i class="fa-solid fa-plus"></i></button>
+                <button @click="showAddModal = 'food'" class="fixed bottom-24 right-6 w-12 h-12 bg-orange-500 text-white rounded-full shadow-lg flex items-center justify-center text-xl z-40 hover:scale-110 transition hover:rotate-90"><i class="fa-solid fa-plus"></i></button>
             </div>
 
             <div v-if="currentTab === 'shopping'">
@@ -160,6 +190,7 @@
                             <div class="w-14 h-14 rounded-full mb-2 flex items-center justify-center text-xl shadow-sm" :class="member.bg"><i :class="member.icon"></i></div>
                             <h3 class="font-bold text-slate-700 text-sm">{{ member.name }}</h3>
                             <p class="text-[10px] text-slate-400 mt-1">{{ getMemberItemCount(member.name, 'shopping') }} 項商品</p>
+                            <div v-if="getMemberItemCount(member.name, 'shopping') > 0" class="absolute top-3 right-3 w-2 h-2 bg-pink-500 rounded-full animate-ping"></div>
                             <div v-if="getMemberItemCount(member.name, 'shopping') > 0" class="absolute top-3 right-3 w-2 h-2 bg-pink-500 rounded-full"></div>
                         </div>
                     </div>
@@ -184,15 +215,18 @@
                         </div>
                         <input type="checkbox" :checked="item.checked" @change="toggleCheck(item.id, item.checked, 'shopping')" class="w-5 h-5 text-pink-500 rounded focus:ring-pink-500">
                     </div>
-                    <button @click="showAddModal = 'shopping'" class="fixed bottom-24 right-6 w-12 h-12 bg-pink-500 text-white rounded-full shadow-lg flex items-center justify-center text-xl z-40 hover:scale-110 transition"><i class="fa-solid fa-plus"></i></button>
+                    <button @click="showAddModal = 'shopping'" class="fixed bottom-24 right-6 w-12 h-12 bg-pink-500 text-white rounded-full shadow-lg flex items-center justify-center text-xl z-40 hover:scale-110 transition hover:rotate-90"><i class="fa-solid fa-plus"></i></button>
                 </div>
             </div>
 
             <div v-if="currentTab === 'expense'">
                 <div v-if="!activeMember">
-                    <div class="bg-gradient-to-br from-slate-700 to-slate-800 text-white rounded-2xl p-5 mb-6 shadow-lg text-center">
-                        <p class="text-xs opacity-70 mb-1">全家總花費 (TWD)</p>
-                        <h3 class="text-3xl font-bold font-mono">{{ totalExpenseTWD.toLocaleString() }}</h3>
+                    <div class="bg-gradient-to-br from-slate-700 to-slate-800 text-white rounded-2xl p-5 mb-6 shadow-lg text-center relative overflow-hidden">
+                        <div class="relative z-10">
+                            <p class="text-xs opacity-70 mb-1">全家總花費 (TWD)</p>
+                            <h3 class="text-3xl font-bold font-mono">{{ totalExpenseTWD.toLocaleString() }}</h3>
+                        </div>
+                        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
                     </div>
                     <h2 class="text-lg font-bold text-slate-800 mb-3">誰付的錢？</h2>
                     <div class="grid grid-cols-2 gap-3">
@@ -222,7 +256,7 @@
                         </div>
                         <span class="font-mono font-bold text-slate-700">¥ {{ Number(exp.amount).toLocaleString() }}</span>
                     </div>
-                    <button @click="showAddModal = 'expense'" class="fixed bottom-24 right-6 w-12 h-12 bg-slate-800 text-white rounded-full shadow-lg flex items-center justify-center text-xl z-40 hover:scale-110 transition"><i class="fa-solid fa-plus"></i></button>
+                    <button @click="showAddModal = 'expense'" class="fixed bottom-24 right-6 w-12 h-12 bg-slate-800 text-white rounded-full shadow-lg flex items-center justify-center text-xl z-40 hover:scale-110 transition hover:rotate-90"><i class="fa-solid fa-plus"></i></button>
                 </div>
             </div>
 
@@ -249,7 +283,7 @@
                 <div class="mb-5">
                     <h3 class="font-bold text-slate-700 mb-2 text-sm"><i class="fa-solid fa-clipboard-check mr-2 text-green-500"></i>行前檢查</h3>
                     <div v-if="!activeChecklistMember" class="grid grid-cols-4 gap-2">
-                        <div v-for="member in familyMembers" :key="member.name" @click="activeChecklistMember = member.name" class="flex flex-col items-center cursor-pointer bg-white p-2 rounded-xl border border-slate-50 shadow-sm">
+                        <div v-for="member in familyMembers" :key="member.name" @click="activeChecklistMember = member.name" class="flex flex-col items-center cursor-pointer bg-white p-2 rounded-xl border border-slate-50 shadow-sm hover:border-green-300 transition">
                             <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm mb-1" :class="member.bg"><i :class="member.icon"></i></div>
                             <span class="text-[10px] text-slate-500">{{ member.name }}</span>
                         </div>
@@ -452,7 +486,7 @@
         createApp({
             data() {
                 return {
-                    isLocked: true, password: ['2','0','2','5'], inputPassword: [], 
+                    isLocked: true, password: ['2','0','2','6'], inputPassword: [], loginError: false,
                     headerImage: headerImage,
                     currentTab: 'schedule', scheduleData: scheduleData, selectedDayIndex: 0,
                     yenAmount: 1000, exchangeRate: 0.215,
@@ -528,8 +562,11 @@
                     } catch(e){} finally{this.weatherLoading=false;}
                 },
                 enterDigit(n) { if(this.inputPassword.length<4) { this.inputPassword.push(String(n)); if(this.inputPassword.length===4) this.checkPassword(); } },
-                backspace() { this.inputPassword.pop(); },
-                checkPassword() { if(JSON.stringify(this.inputPassword) === JSON.stringify(this.password)) setTimeout(() => this.isLocked = false, 300); },
+                backspace() { this.inputPassword.pop(); this.loginError=false; },
+                checkPassword() { 
+                    if(JSON.stringify(this.inputPassword) === JSON.stringify(this.password)) setTimeout(() => this.isLocked = false, 300);
+                    else { this.loginError = true; setTimeout(() => { this.inputPassword=[]; this.loginError=false; }, 1000); }
+                },
                 getTabIcon(t) { return {'schedule':'fa-solid fa-map-location-dot','food':'fa-solid fa-utensils','shopping':'fa-solid fa-basket-shopping','expense':'fa-solid fa-yen-sign','tools':'fa-solid fa-toolbox'}[t]; },
                 getTransportIcon(t) { return {'walk':'fa-solid fa-person-walking','car':'fa-solid fa-car-side','bus':'fa-solid fa-bus','subway':'fa-solid fa-train-subway','taxi':'fa-solid fa-taxi','plane':'fa-solid fa-plane-up'}[t] || 'fa-solid fa-arrow-right'; },
                 getCategoryColor(c) { return {'景點':'bg-pink-400','美食':'bg-orange-400','住宿':'bg-indigo-400','購物':'bg-yellow-400','航班':'bg-blue-400','租車':'bg-green-500'}[c] || 'bg-gray-400'; },
